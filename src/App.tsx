@@ -42,7 +42,7 @@ const Data = ({ name }: { name: string }) => {
   return (
     <List>
       {data.items.map((item) => (
-        <ListItemButton divider key={item?.name} href={item?.wikiLink || ''} target="_blank" >
+        <ListItemButton divider key={item?.name} href={item?.wikiLink || ''} target="" >
           <ListItemText
             primary={item?.name}
             secondary={item?.usedInTasks?.map((task) => task?.name).join(', ')}
@@ -73,8 +73,11 @@ function App() {
       <CssBaseline />
       <div className="App">
         <TextField
-          onChange={(e) => {
-            setName(e.target.value);
+          onKeyPress={e => {
+            // e.keyCodeは常に0になる
+            if (e.key === 'Enter') {
+              setName((e.target as HTMLInputElement).value);
+            }
           }}
         />
         <Data name={name} />
