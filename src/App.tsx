@@ -1,22 +1,25 @@
-import { useState } from 'react'
-import './App.css'
+import { useState } from 'react';
+import './App.css';
 import { TypedDocumentNode, useQuery } from '@apollo/client';
-import { List, ListItem, ListItemText, TextField } from '@mui/material';
+import { List, ListItemButton, ListItemText, TextField } from '@mui/material';
 import * as React from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { gql } from '../src/__generated__/gql';
-import { Exact, GetItemsQuery, Item, Task, TaskObjective, TaskObjectiveItem } from './__generated__/graphql';
-import { Box } from '@mui/system';
+import { Exact, GetItemsQuery } from './__generated__/graphql';
 
-const GET_ITEMS: TypedDocumentNode<GetItemsQuery, Exact<{
-  name: string;
-}>> = gql(`
+const GET_ITEMS: TypedDocumentNode<
+  GetItemsQuery,
+  Exact<{
+    name: string;
+  }>
+> = gql(`
   query getItems($name: String!) { 
     items(name: $name) {
       id
       name
+      wikiLink
       usedInTasks {
         id
         name
@@ -28,27 +31,30 @@ const GET_ITEMS: TypedDocumentNode<GetItemsQuery, Exact<{
 const Data = ({ name }: { name: string }) => {
   if (name === '') return <p>Please Enter Item's name.</p>;
 
-  const { loading, error, data } = useQuery(GET_ITEMS, { variables: { name } });
+  const { loading, error, data } = useQuery(GET_ITEMS, {
+    variables: { name },
+  });
 
-  if (loading || !data) return <p>Loading...</p>;
+  if (loading) return <p>Loading...</p>;
   if (error) return <p>Error : {error.message}</p>;
+  if (!data) return <p>No item found</p>;
 
   return (
     <List>
       {data.items.map((item) => (
-        <ListItem key={item?.name}>
+        <ListItemButton divider key={item?.name} href={item?.wikiLink || ''} target="_blank" >
           <ListItemText
             primary={item?.name}
-            secondary={item?.usedInTasks?.map((task) => task?.name).join(", ")}
+            secondary={item?.usedInTasks?.map((task) => task?.name).join(', ')}
           />
-        </ListItem>
+        </ListItemButton>
       ))}
     </List>
   );
-}
+};
 
 function App() {
-  const [name, setName] = useState('')
+  const [name, setName] = useState('');
 
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
@@ -59,19 +65,22 @@ function App() {
           mode: prefersDarkMode ? 'dark' : 'light',
         },
       }),
-    [prefersDarkMode],
+    [prefersDarkMode]
   );
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className="App">
-        <TextField onChange={(e) => { setName(e.target.value) }} />
+        <TextField
+          onChange={(e) => {
+            setName(e.target.value);
+          }}
+        />
         <Data name={name} />
       </div>
     </ThemeProvider>
   );
-
 }
 
-export default App
+export default App;

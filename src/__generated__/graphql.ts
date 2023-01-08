@@ -124,6 +124,7 @@ export type Craft = {
   id: Scalars['ID'];
   level: Scalars['Int'];
   requiredItems: Array<Maybe<ContainedItem>>;
+  requiredQuestItems: Array<Maybe<QuestItem>>;
   /** @deprecated Use stationLevel instead. */
   requirements: Array<Maybe<PriceRequirement>>;
   rewardItems: Array<Maybe<ContainedItem>>;
@@ -132,6 +133,7 @@ export type Craft = {
   /** @deprecated Use stationLevel instead. */
   sourceName: Scalars['String'];
   station: HideoutStation;
+  taskUnlock?: Maybe<Task>;
 };
 
 export type FleaMarket = Vendor & {
@@ -1348,6 +1350,7 @@ export type TaskObjectiveExperience = TaskObjective & {
 export type TaskObjectiveExtract = TaskObjective & {
   __typename?: 'TaskObjectiveExtract';
   description: Scalars['String'];
+  exitName?: Maybe<Scalars['String']>;
   exitStatus: Array<Maybe<Scalars['String']>>;
   id?: Maybe<Scalars['ID']>;
   maps: Array<Maybe<Map>>;
@@ -1457,6 +1460,7 @@ export type TaskObjectiveTraderLevel = TaskObjective & {
 
 export type TaskRewards = {
   __typename?: 'TaskRewards';
+  craftUnlock: Array<Maybe<Craft>>;
   items: Array<Maybe<ContainedItem>>;
   offerUnlock: Array<Maybe<OfferUnlock>>;
   skillLevelReward: Array<Maybe<SkillLevel>>;
@@ -1576,7 +1580,7 @@ export type GetItemsQueryVariables = Exact<{
 }>;
 
 
-export type GetItemsQuery = { __typename?: 'Query', items: Array<{ __typename?: 'Item', id: string, name?: string | null, usedInTasks: Array<{ __typename?: 'Task', id?: string | null, name: string } | null> } | null> };
+export type GetItemsQuery = { __typename?: 'Query', items: Array<{ __typename?: 'Item', id: string, name?: string | null, wikiLink?: string | null, usedInTasks: Array<{ __typename?: 'Task', id?: string | null, name: string } | null> } | null> };
 
 
-export const GetItemsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getItems"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"usedInTasks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetItemsQuery, GetItemsQueryVariables>;
+export const GetItemsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getItems"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"wikiLink"}},{"kind":"Field","name":{"kind":"Name","value":"usedInTasks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetItemsQuery, GetItemsQueryVariables>;
