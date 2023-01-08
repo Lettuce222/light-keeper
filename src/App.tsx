@@ -42,7 +42,7 @@ const Data = ({ name }: { name: string }) => {
   return (
     <List>
       {data.items.map((item) => (
-        <ListItemButton divider key={item?.name} href={item?.wikiLink || ''} target="" >
+        <ListItemButton divider key={item?.name} href={item?.wikiLink || ''} target="_blank" >
           <ListItemText
             primary={item?.name}
             secondary={item?.usedInTasks?.map((task) => task?.name).join(', ')}
