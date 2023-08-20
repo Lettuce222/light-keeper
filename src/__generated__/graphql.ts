@@ -36,6 +36,7 @@ export type Ammo = {
   recoilModifier?: Maybe<Scalars['Float']>;
   ricochetChance: Scalars['Float'];
   stackMaxSize: Scalars['Int'];
+  staminaBurnPerDamage?: Maybe<Scalars['Float']>;
   tracer: Scalars['Boolean'];
   tracerColor?: Maybe<Scalars['String']>;
   weight: Scalars['Float'];
@@ -78,7 +79,10 @@ export type Barter = {
 export type BossEscort = {
   __typename?: 'BossEscort';
   amount?: Maybe<Array<Maybe<BossEscortAmount>>>;
+  boss: MobInfo;
+  /** @deprecated Use boss.name instead. */
   name: Scalars['String'];
+  /** @deprecated Use boss.normalizedName instead. */
   normalizedName: Scalars['String'];
 };
 
@@ -90,8 +94,11 @@ export type BossEscortAmount = {
 
 export type BossSpawn = {
   __typename?: 'BossSpawn';
+  boss: MobInfo;
   escorts: Array<Maybe<BossEscort>>;
+  /** @deprecated Use boss.name instead. */
   name: Scalars['String'];
+  /** @deprecated Use boss.normalizedName instead. */
   normalizedName: Scalars['String'];
   spawnChance: Scalars['Float'];
   spawnLocations: Array<Maybe<BossSpawnLocation>>;
@@ -108,6 +115,7 @@ export type BossSpawnLocation = {
   __typename?: 'BossSpawnLocation';
   chance: Scalars['Float'];
   name: Scalars['String'];
+  spawnKey: Scalars['String'];
 };
 
 export type ContainedItem = {
@@ -257,6 +265,13 @@ export type HealthEffect = {
   time?: Maybe<NumberCompare>;
 };
 
+export type HealthPart = {
+  __typename?: 'HealthPart';
+  bodyPart: Scalars['String'];
+  id: Scalars['ID'];
+  max: Scalars['Int'];
+};
+
 /** HideoutModule has been replaced with HideoutStation. */
 export type HideoutModule = {
   __typename?: 'HideoutModule';
@@ -280,8 +295,20 @@ export type HideoutStation = {
   tarkovDataId?: Maybe<Scalars['Int']>;
 };
 
+export type HideoutStationBonus = {
+  __typename?: 'HideoutStationBonus';
+  name: Scalars['String'];
+  passive?: Maybe<Scalars['Boolean']>;
+  production?: Maybe<Scalars['Boolean']>;
+  skillName?: Maybe<Scalars['String']>;
+  slotItems?: Maybe<Array<Maybe<Item>>>;
+  type: Scalars['String'];
+  value?: Maybe<Scalars['Float']>;
+};
+
 export type HideoutStationLevel = {
   __typename?: 'HideoutStationLevel';
+  bonuses?: Maybe<Array<Maybe<HideoutStationBonus>>>;
   constructionTime: Scalars['Int'];
   /** crafts is only available via the hideoutStations query. */
   crafts: Array<Maybe<Craft>>;
@@ -449,7 +476,6 @@ export enum ItemCategoryName {
   Item = 'Item',
   Jewelry = 'Jewelry',
   Key = 'Key',
-  KeyMechanical = 'KeyMechanical',
   Keycard = 'Keycard',
   Knife = 'Knife',
   LockingContainer = 'LockingContainer',
@@ -458,6 +484,7 @@ export enum ItemCategoryName {
   Magazine = 'Magazine',
   Map = 'Map',
   MarksmanRifle = 'MarksmanRifle',
+  MechanicalKey = 'MechanicalKey',
   MedicalItem = 'MedicalItem',
   MedicalSupplies = 'MedicalSupplies',
   Medikit = 'Medikit',
@@ -489,7 +516,7 @@ export enum ItemCategoryName {
   StackableItem = 'StackableItem',
   Stimulant = 'Stimulant',
   Stock = 'Stock',
-  ThermalVision = 'ThermalVision',
+  TermalVision = 'TermalVision',
   ThrowableWeapon = 'ThrowableWeapon',
   Tool = 'Tool',
   Ubgl = 'UBGL',
@@ -519,7 +546,7 @@ export type ItemPrice = {
   vendor: Vendor;
 };
 
-export type ItemProperties = ItemPropertiesAmmo | ItemPropertiesArmor | ItemPropertiesArmorAttachment | ItemPropertiesBackpack | ItemPropertiesBarrel | ItemPropertiesChestRig | ItemPropertiesContainer | ItemPropertiesFoodDrink | ItemPropertiesGlasses | ItemPropertiesGrenade | ItemPropertiesHelmet | ItemPropertiesKey | ItemPropertiesMagazine | ItemPropertiesMedKit | ItemPropertiesMedicalItem | ItemPropertiesMelee | ItemPropertiesNightVision | ItemPropertiesPainkiller | ItemPropertiesPreset | ItemPropertiesScope | ItemPropertiesStim | ItemPropertiesSurgicalKit | ItemPropertiesWeapon | ItemPropertiesWeaponMod;
+export type ItemProperties = ItemPropertiesAmmo | ItemPropertiesArmor | ItemPropertiesArmorAttachment | ItemPropertiesBackpack | ItemPropertiesBarrel | ItemPropertiesChestRig | ItemPropertiesContainer | ItemPropertiesFoodDrink | ItemPropertiesGlasses | ItemPropertiesGrenade | ItemPropertiesHeadphone | ItemPropertiesHelmet | ItemPropertiesKey | ItemPropertiesMagazine | ItemPropertiesMedKit | ItemPropertiesMedicalItem | ItemPropertiesMelee | ItemPropertiesNightVision | ItemPropertiesPainkiller | ItemPropertiesPreset | ItemPropertiesResource | ItemPropertiesScope | ItemPropertiesStim | ItemPropertiesSurgicalKit | ItemPropertiesWeapon | ItemPropertiesWeaponMod;
 
 export type ItemPropertiesAmmo = {
   __typename?: 'ItemPropertiesAmmo';
@@ -544,12 +571,14 @@ export type ItemPropertiesAmmo = {
   recoilModifier?: Maybe<Scalars['Float']>;
   ricochetChance?: Maybe<Scalars['Float']>;
   stackMaxSize?: Maybe<Scalars['Int']>;
+  staminaBurnPerDamage?: Maybe<Scalars['Float']>;
   tracer?: Maybe<Scalars['Boolean']>;
   tracerColor?: Maybe<Scalars['String']>;
 };
 
 export type ItemPropertiesArmor = {
   __typename?: 'ItemPropertiesArmor';
+  armorType?: Maybe<Scalars['String']>;
   class?: Maybe<Scalars['Int']>;
   durability?: Maybe<Scalars['Int']>;
   ergoPenalty?: Maybe<Scalars['Int']>;
@@ -576,9 +605,12 @@ export type ItemPropertiesArmorAttachment = {
 export type ItemPropertiesBackpack = {
   __typename?: 'ItemPropertiesBackpack';
   capacity?: Maybe<Scalars['Int']>;
+  ergoPenalty?: Maybe<Scalars['Int']>;
   grids?: Maybe<Array<Maybe<ItemStorageGrid>>>;
   /** @deprecated Use grids instead. */
   pouches?: Maybe<Array<Maybe<ItemStorageGrid>>>;
+  speedPenalty?: Maybe<Scalars['Float']>;
+  turnPenalty?: Maybe<Scalars['Float']>;
 };
 
 export type ItemPropertiesBarrel = {
@@ -597,6 +629,7 @@ export type ItemPropertiesBarrel = {
 
 export type ItemPropertiesChestRig = {
   __typename?: 'ItemPropertiesChestRig';
+  armorType?: Maybe<Scalars['String']>;
   capacity?: Maybe<Scalars['Int']>;
   class?: Maybe<Scalars['Int']>;
   durability?: Maybe<Scalars['Int']>;
@@ -644,8 +677,25 @@ export type ItemPropertiesGrenade = {
   type?: Maybe<Scalars['String']>;
 };
 
+export type ItemPropertiesHeadphone = {
+  __typename?: 'ItemPropertiesHeadphone';
+  ambientVolume?: Maybe<Scalars['Int']>;
+  compressorAttack?: Maybe<Scalars['Int']>;
+  compressorGain?: Maybe<Scalars['Int']>;
+  compressorRelease?: Maybe<Scalars['Int']>;
+  compressorThreshold?: Maybe<Scalars['Int']>;
+  compressorVolume?: Maybe<Scalars['Int']>;
+  cutoffFrequency?: Maybe<Scalars['Int']>;
+  distanceModifier?: Maybe<Scalars['Float']>;
+  distortion?: Maybe<Scalars['Float']>;
+  dryVolume?: Maybe<Scalars['Int']>;
+  highFrequencyGain?: Maybe<Scalars['Float']>;
+  resonance?: Maybe<Scalars['Float']>;
+};
+
 export type ItemPropertiesHelmet = {
   __typename?: 'ItemPropertiesHelmet';
+  armorType?: Maybe<Scalars['String']>;
   blindnessProtection?: Maybe<Scalars['Float']>;
   blocksHeadset?: Maybe<Scalars['Boolean']>;
   class?: Maybe<Scalars['Int']>;
@@ -727,10 +777,16 @@ export type ItemPropertiesPainkiller = {
 export type ItemPropertiesPreset = {
   __typename?: 'ItemPropertiesPreset';
   baseItem: Item;
+  default?: Maybe<Scalars['Boolean']>;
   ergonomics?: Maybe<Scalars['Float']>;
   moa?: Maybe<Scalars['Float']>;
   recoilHorizontal?: Maybe<Scalars['Int']>;
   recoilVertical?: Maybe<Scalars['Int']>;
+};
+
+export type ItemPropertiesResource = {
+  __typename?: 'ItemPropertiesResource';
+  units?: Maybe<Scalars['Int']>;
 };
 
 export type ItemPropertiesScope = {
@@ -765,7 +821,10 @@ export type ItemPropertiesWeapon = {
   __typename?: 'ItemPropertiesWeapon';
   allowedAmmo?: Maybe<Array<Maybe<Item>>>;
   caliber?: Maybe<Scalars['String']>;
+  cameraRecoil?: Maybe<Scalars['Float']>;
+  cameraSnap?: Maybe<Scalars['Float']>;
   centerOfImpact?: Maybe<Scalars['Float']>;
+  convergence?: Maybe<Scalars['Float']>;
   defaultAmmo?: Maybe<Item>;
   defaultErgonomics?: Maybe<Scalars['Float']>;
   defaultHeight?: Maybe<Scalars['Int']>;
@@ -782,6 +841,8 @@ export type ItemPropertiesWeapon = {
   fireRate?: Maybe<Scalars['Int']>;
   maxDurability?: Maybe<Scalars['Int']>;
   presets?: Maybe<Array<Maybe<Item>>>;
+  recoilAngle?: Maybe<Scalars['Int']>;
+  recoilDispersion?: Maybe<Scalars['Int']>;
   recoilHorizontal?: Maybe<Scalars['Int']>;
   recoilVertical?: Maybe<Scalars['Int']>;
   repairCost?: Maybe<Scalars['Int']>;
@@ -888,6 +949,8 @@ export enum LanguageCode {
 
 export type Map = {
   __typename?: 'Map';
+  accessKeys: Array<Maybe<Item>>;
+  accessKeysMinPlayerLevel?: Maybe<Scalars['Int']>;
   bosses: Array<Maybe<BossSpawn>>;
   description?: Maybe<Scalars['String']>;
   enemies?: Maybe<Array<Maybe<Scalars['String']>>>;
@@ -897,8 +960,37 @@ export type Map = {
   normalizedName: Scalars['String'];
   players?: Maybe<Scalars['String']>;
   raidDuration?: Maybe<Scalars['Int']>;
+  spawns?: Maybe<Array<Maybe<MapSpawn>>>;
   tarkovDataId?: Maybe<Scalars['ID']>;
   wiki?: Maybe<Scalars['String']>;
+};
+
+export type MapPosition = {
+  __typename?: 'MapPosition';
+  x: Scalars['Float'];
+  y: Scalars['Float'];
+  z: Scalars['Float'];
+};
+
+export type MapSpawn = {
+  __typename?: 'MapSpawn';
+  categories?: Maybe<Array<Maybe<Scalars['String']>>>;
+  position: MapPosition;
+  sides?: Maybe<Array<Maybe<Scalars['String']>>>;
+  zoneName?: Maybe<Scalars['String']>;
+};
+
+export type MobInfo = {
+  __typename?: 'MobInfo';
+  /** equipment and items are estimates and may be inaccurate. */
+  equipment: Array<Maybe<ContainedItem>>;
+  health?: Maybe<Array<Maybe<HealthPart>>>;
+  id: Scalars['ID'];
+  imagePortraitLink?: Maybe<Scalars['String']>;
+  imagePosterLink?: Maybe<Scalars['String']>;
+  items: Array<Maybe<Item>>;
+  name: Scalars['String'];
+  normalizedName: Scalars['String'];
 };
 
 export type NumberCompare = {
@@ -933,6 +1025,7 @@ export type Query = {
   ammo?: Maybe<Array<Maybe<Ammo>>>;
   armorMaterials: Array<Maybe<ArmorMaterial>>;
   barters?: Maybe<Array<Maybe<Barter>>>;
+  bosses?: Maybe<Array<Maybe<MobInfo>>>;
   crafts?: Maybe<Array<Maybe<Craft>>>;
   fleaMarket: FleaMarket;
   handbookCategories: Array<Maybe<ItemCategory>>;
@@ -982,6 +1075,14 @@ export type QueryArmorMaterialsArgs = {
 export type QueryBartersArgs = {
   lang?: InputMaybe<LanguageCode>;
   limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryBossesArgs = {
+  lang?: InputMaybe<LanguageCode>;
+  limit?: InputMaybe<Scalars['Int']>;
+  name?: InputMaybe<Array<Scalars['String']>>;
   offset?: InputMaybe<Scalars['Int']>;
 };
 
@@ -1077,8 +1178,10 @@ export type QueryItemsByTypeArgs = {
 
 
 export type QueryMapsArgs = {
+  enemies?: InputMaybe<Array<Scalars['String']>>;
   lang?: InputMaybe<LanguageCode>;
   limit?: InputMaybe<Scalars['Int']>;
+  name?: InputMaybe<Array<Scalars['String']>>;
   offset?: InputMaybe<Scalars['Int']>;
 };
 
@@ -1217,9 +1320,13 @@ export type RequirementTask = {
 
 export type RequirementTrader = {
   __typename?: 'RequirementTrader';
+  compareMethod?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['ID']>;
-  level: Scalars['Int'];
+  /** @deprecated Use value instead. */
+  level?: Maybe<Scalars['Int']>;
+  requirementType?: Maybe<Scalars['String']>;
   trader: Trader;
+  value?: Maybe<Scalars['Int']>;
 };
 
 export enum RequirementType {
@@ -1282,22 +1389,30 @@ export type Task = {
   descriptionMessageId?: Maybe<Scalars['String']>;
   experience: Scalars['Int'];
   factionName?: Maybe<Scalars['String']>;
+  failConditions: Array<Maybe<TaskObjective>>;
   failMessageId?: Maybe<Scalars['String']>;
+  failureOutcome?: Maybe<TaskRewards>;
   finishRewards?: Maybe<TaskRewards>;
   id?: Maybe<Scalars['ID']>;
+  kappaRequired?: Maybe<Scalars['Boolean']>;
+  lightkeeperRequired?: Maybe<Scalars['Boolean']>;
   map?: Maybe<Map>;
   minPlayerLevel?: Maybe<Scalars['Int']>;
   name: Scalars['String'];
   neededKeys?: Maybe<Array<Maybe<TaskKey>>>;
   normalizedName: Scalars['String'];
   objectives: Array<Maybe<TaskObjective>>;
+  restartable?: Maybe<Scalars['Boolean']>;
   startMessageId?: Maybe<Scalars['String']>;
   startRewards?: Maybe<TaskRewards>;
   successMessageId?: Maybe<Scalars['String']>;
   tarkovDataId?: Maybe<Scalars['Int']>;
+  taskImageLink?: Maybe<Scalars['String']>;
   taskRequirements: Array<Maybe<TaskStatusRequirement>>;
   trader: Trader;
+  /** @deprecated Use traderRequirements instead. */
   traderLevelRequirements: Array<Maybe<RequirementTrader>>;
+  traderRequirements: Array<Maybe<RequirementTrader>>;
   wikiLink?: Maybe<Scalars['String']>;
 };
 
@@ -1328,6 +1443,8 @@ export type TaskObjectiveBuildItem = TaskObjective & {
   __typename?: 'TaskObjectiveBuildItem';
   attributes: Array<Maybe<AttributeThreshold>>;
   containsAll: Array<Maybe<Item>>;
+  containsCategory: Array<Maybe<ItemCategory>>;
+  /** @deprecated Use containsCategory instead. */
   containsOne: Array<Maybe<Item>>;
   description: Scalars['String'];
   id?: Maybe<Scalars['ID']>;
@@ -1418,7 +1535,11 @@ export type TaskObjectiveShoot = TaskObjective & {
   optional: Scalars['Boolean'];
   playerHealthEffect?: Maybe<HealthEffect>;
   shotType: Scalars['String'];
+  /** @deprecated Use targetNames instead. */
   target: Scalars['String'];
+  targetNames: Array<Maybe<Scalars['String']>>;
+  timeFromHour?: Maybe<Scalars['Int']>;
+  timeUntilHour?: Maybe<Scalars['Int']>;
   type: Scalars['String'];
   usingWeapon?: Maybe<Array<Maybe<Item>>>;
   usingWeaponMods?: Maybe<Array<Maybe<Array<Maybe<Item>>>>>;
@@ -1458,6 +1579,31 @@ export type TaskObjectiveTraderLevel = TaskObjective & {
   type: Scalars['String'];
 };
 
+export type TaskObjectiveTraderStanding = TaskObjective & {
+  __typename?: 'TaskObjectiveTraderStanding';
+  compareMethod: Scalars['String'];
+  description: Scalars['String'];
+  id?: Maybe<Scalars['ID']>;
+  maps: Array<Maybe<Map>>;
+  optional: Scalars['Boolean'];
+  trader: Trader;
+  type: Scalars['String'];
+  value: Scalars['Int'];
+};
+
+export type TaskObjectiveUseItem = TaskObjective & {
+  __typename?: 'TaskObjectiveUseItem';
+  compareMethod: Scalars['String'];
+  count: Scalars['Int'];
+  description: Scalars['String'];
+  id?: Maybe<Scalars['ID']>;
+  maps: Array<Maybe<Map>>;
+  optional: Scalars['Boolean'];
+  type: Scalars['String'];
+  useAny: Array<Maybe<Item>>;
+  zoneNames: Array<Maybe<Scalars['String']>>;
+};
+
 export type TaskRewards = {
   __typename?: 'TaskRewards';
   craftUnlock: Array<Maybe<Craft>>;
@@ -1483,9 +1629,12 @@ export type Trader = {
   description?: Maybe<Scalars['String']>;
   discount: Scalars['Float'];
   id: Scalars['ID'];
+  image4xLink?: Maybe<Scalars['String']>;
+  imageLink?: Maybe<Scalars['String']>;
   levels: Array<TraderLevel>;
   name: Scalars['String'];
   normalizedName: Scalars['String'];
+  reputationLevels: Array<Maybe<TraderReputationLevel>>;
   resetTime?: Maybe<Scalars['String']>;
   tarkovDataId?: Maybe<Scalars['Int']>;
 };
@@ -1507,6 +1656,8 @@ export type TraderLevel = {
   barters: Array<Maybe<Barter>>;
   cashOffers: Array<Maybe<TraderCashOffer>>;
   id: Scalars['ID'];
+  image4xLink?: Maybe<Scalars['String']>;
+  imageLink?: Maybe<Scalars['String']>;
   insuranceRate?: Maybe<Scalars['Float']>;
   level: Scalars['Int'];
   payRate: Scalars['Float'];
@@ -1547,6 +1698,23 @@ export type TraderPrice = {
   priceRUB: Scalars['Int'];
   /** @deprecated Use item.buyFor instead. */
   trader: Trader;
+};
+
+export type TraderReputationLevel = TraderReputationLevelFence;
+
+export type TraderReputationLevelFence = {
+  __typename?: 'TraderReputationLevelFence';
+  availableScavExtracts?: Maybe<Scalars['Int']>;
+  extractPriceModifier?: Maybe<Scalars['Float']>;
+  hostileBosses?: Maybe<Scalars['Boolean']>;
+  hostileScavs?: Maybe<Scalars['Boolean']>;
+  minimumReputation: Scalars['Int'];
+  priceModifier?: Maybe<Scalars['Float']>;
+  scavAttackSupport?: Maybe<Scalars['Boolean']>;
+  scavCaseTimeModifier?: Maybe<Scalars['Float']>;
+  scavCooldownModifier?: Maybe<Scalars['Float']>;
+  scavEquipmentSpawnChanceModifier?: Maybe<Scalars['Float']>;
+  scavFollowChance?: Maybe<Scalars['Float']>;
 };
 
 /** TraderResetTime is deprecated and replaced with Trader. */
